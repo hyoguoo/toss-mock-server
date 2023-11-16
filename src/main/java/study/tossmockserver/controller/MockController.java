@@ -1,6 +1,7 @@
 package study.tossmockserver.controller;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import study.tossmockserver.dto.TossConfirmRequest;
 import study.tossmockserver.dto.TossPaymentResponse;
@@ -9,6 +10,7 @@ import study.tossmockserver.repository.OrderInfoRepository;
 
 import java.math.BigDecimal;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 public class MockController {
@@ -18,6 +20,7 @@ public class MockController {
 
     @GetMapping("/orders/{orderId}")
     public TossPaymentResponse getPaymentInfoByOrderId(@PathVariable("orderId") String orderId) {
+        log.info("getPaymentInfoByOrderId orderId = {}", orderId);
         OrderInfo orderInfo = this.orderInfoRepository.findByOrderIdWithProductAndUser(orderId)
                 .orElseThrow(() -> new IllegalArgumentException("주문 정보가 존재하지 않습니다."));
         BigDecimal totalAmount = orderInfo.getTotalAmount();
@@ -46,6 +49,7 @@ public class MockController {
 
     @PostMapping("/confirm")
     public TossPaymentResponse confirmPayment(@RequestBody TossConfirmRequest tossConfirmRequest) {
+        log.info("confirmPayment tossConfirmRequest = {}", tossConfirmRequest.getOrderId());
         String paymentKey = tossConfirmRequest.getPaymentKey();
         String orderId = tossConfirmRequest.getOrderId();
         BigDecimal totalAmount = tossConfirmRequest.getAmount();
